@@ -29,7 +29,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'users'
+    'users',
+    'reservations'
 ]
 AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
