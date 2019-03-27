@@ -14,3 +14,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return []
         return [permission() for permission in self.permission_classes]
+
+    def get_queryset(self):
+        return User.objects.filter(created_by=self.request.user)
