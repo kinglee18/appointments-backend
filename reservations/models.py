@@ -3,11 +3,11 @@ from django.core.validators import RegexValidator
 
 
 class Reservation(models.Model):
-    PENDING = "Pending"
-    DECLINED = "Declined"
-    ACCEPTED = "Accepted"
-    CANCELED = "Canceled"
-    ACCOMPLISHED = "Accomplished"
+    PENDING = "P"
+    DECLINED = "D"
+    ACCEPTED = "A"
+    CANCELED = "C"
+    ACCOMPLISHED = "Ac"
 
     STATUS_LIST = (
         (PENDING, 'Pending'),

@@ -1,10 +1,25 @@
 from rest_framework import serializers
 from users.models import User
+from rest_framework.authtoken.models import Token
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserBasicSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = ['password', 'first_name',
-                  'last_name', 'second_last_name', 'email']
+        fields = ['first_name',
+                  'last_name', 'second_last_name', 'email', 'id']
+
+
+class UserTokenSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField()
+
+    def get_token(self, obj):
+        token = Token.objects.create(user=obj)
+        return token.key
+
+    class Meta:
+        model = User
+        fields = ['first_name',
+                  'last_name', 'second_last_name', 'email', 'id', 'token']
         extra_kwargs = {'password': {'write_only': True}}
