@@ -85,7 +85,10 @@ DATABASES = {
         'PASSWORD': '1',
         'HOST': 'localhost',
         'PORT': '',
-    }
+        'TEST': {
+            'NAME': 'mytestdatabase',
+        },
+    },
 }
 
 # Password validation

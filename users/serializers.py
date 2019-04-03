@@ -21,5 +21,6 @@ class UserTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name',
-                  'last_name', 'second_last_name', 'email', 'id', 'token']
-        extra_kwargs = {'password': {'write_only': True}}
+                  'last_name', 'second_last_name', 'email', 'id', 'token', 'password']
+        extra_kwargs = {'password': {'write_only': True, 'required':True},
+                        'first_name': {'required': True}, 'last_name': {'required': True}}
