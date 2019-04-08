@@ -6,14 +6,16 @@ class Reservation(models.Model):
     PENDING = "P"
     DECLINED = "D"
     ACCEPTED = "A"
-    CANCELED = "C"
-    ACCOMPLISHED = "Ac"
+    CANCELED_ORG = "CO"
+    CANCELED_GUEST = "CG"
+    ACCOMPLISHED = "AC"
 
     STATUS_LIST = (
         (PENDING, 'Pending'),
         (DECLINED, 'Declined'),
         (ACCEPTED, 'Accepted'),
-        (CANCELED, 'Canceled'),
+        (CANCELED_ORG, 'Canceled by organizer'),
+        (CANCELED_GUEST, 'Canceled by guest'),
         (ACCOMPLISHED, 'Accomplished'),
     )
     date = models.DateTimeField()
@@ -33,3 +35,10 @@ class Reservation(models.Model):
         if self.guest is None:
             self.status = self.ACCEPTED
         super().save(*args, **kwargs)
+
+    def cancel_reservation(self, applicant):
+        if self.created_by == applicant:
+            self.status = self.CANCELED_ORG
+        elif self.guest == applicant:
+            self.status = self.CANCELED_GUEST
+        self.save()
