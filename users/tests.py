@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import  status
 from rest_framework.test import APIClient
 from users.models import User
-from users.serializers import UserBasicSerializer
+from users.serializers import UserSerializer
 
 class UserCrudTestCase(TestCase):
 
@@ -18,7 +18,7 @@ class UserCrudTestCase(TestCase):
             assert field in response.data
 
     def test_user_registration(self):
-        result_fields = ['token', 'first_name', 'last_name', 'id', 'email', 'second_last_name']
+        result_fields = ['first_name', 'last_name', 'id', 'email', 'second_last_name']
         data = {
             "first_name": "javier",
             "last_name": "hernandez",
@@ -39,6 +39,6 @@ class UserCrudTestCase(TestCase):
             "/users/",
             format="json")
         users = User.objects.exclude(id=self.user.id)
-        serializer = UserBasicSerializer(users, many=True)
+        serializer = UserSerializer(users, many=True)
         self.assertEqual(response.data, serializer.data)
         assert response.status_code == status.HTTP_200_OK
