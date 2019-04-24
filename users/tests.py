@@ -33,7 +33,7 @@ class UserCrudTestCase(TestCase):
     """
     excludes current user 
     """
-    def test_user_list(self):
+    def test_contacts_list(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(
             "/users/",
@@ -42,3 +42,25 @@ class UserCrudTestCase(TestCase):
         serializer = UserSerializer(users, many=True)
         self.assertEqual(response.data, serializer.data)
         assert response.status_code == status.HTTP_200_OK
+
+    """
+    Create search test and order 
+    """
+
+    """
+    Test contact addition
+    """
+    def test_contact_addtion(self):
+        contact = User.objects.create(email="jose@hotmail.com", is_active=True)
+        data = {
+            "contacts": [contact.id]
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(
+            "/users/{0}/".format(self.user.id),
+            data,
+            format="json")
+        print (self.user.contacts.count())
+        assert self.user.contacts.count() == 1
+        assert response.status_code == status.HTTP_200_OK
+

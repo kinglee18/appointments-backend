@@ -1,17 +1,30 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from users.models import User
 from users.serializers import UserSerializer
+from rest_framework.decorators import action
+
 
 class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'update']
+    http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
     queryset = User.objects.filter()
     serializer_class = UserSerializer
-        
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['first_name',
+                     'last_name', 'second_last_name', 'email']
+
     def get_permissions(self):
         if self.action == 'create':
             return []
         return [permission() for permission in self.permission_classes]
-    
-    def get_queryset(self):
-        return self.queryset.exclude(id=self.request.user.id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(
+            self.get_queryset()).exclude(id=self.request.user.id)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
