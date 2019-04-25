@@ -1,8 +1,9 @@
 from django.test import TestCase
-from rest_framework import  status
+from rest_framework import status
 from rest_framework.test import APIClient
 from users.models import User
 from users.serializers import UserSerializer
+
 
 class UserCrudTestCase(TestCase):
 
@@ -18,7 +19,8 @@ class UserCrudTestCase(TestCase):
             assert field in response.data
 
     def test_user_registration(self):
-        result_fields = ['first_name', 'last_name', 'id', 'email', 'second_last_name']
+        result_fields = ['first_name', 'last_name',
+                         'id', 'email', 'second_last_name']
         data = {
             "first_name": "javier",
             "last_name": "hernandez",
@@ -33,6 +35,7 @@ class UserCrudTestCase(TestCase):
     """
     excludes current user 
     """
+
     def test_contacts_list(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(
@@ -47,10 +50,17 @@ class UserCrudTestCase(TestCase):
     Create search test and order 
     """
 
+
+class ContactsCrudTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(email="alberto@hotmail.com")
+        self.client = APIClient()
     """
     Test contact addition
     """
-    def test_contact_addtion(self):
+
+    def test_contact_addition(self):
         contact = User.objects.create(email="jose@hotmail.com", is_active=True)
         data = {
             "contacts": [contact.id]
@@ -60,7 +70,19 @@ class UserCrudTestCase(TestCase):
             "/users/{0}/".format(self.user.id),
             data,
             format="json")
-        print (self.user.contacts.count())
-        assert self.user.contacts.count() == 1
+        assert self.user.contacts.first().id == contact.id
         assert response.status_code == status.HTTP_200_OK
 
+    def test_contact_removal(self):
+        contact = User.objects.create(email="jose@hotmail.com", is_active=True)
+        self.user.contacts.add(contact)
+        data = {
+            "contacts": []
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(
+            "/users/{0}/".format(self.user.id),
+            data,
+            format="json")
+        assert self.user.contacts.count() == 0
+        assert response.status_code == status.HTTP_200_OK

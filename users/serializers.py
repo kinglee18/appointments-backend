@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         many=True,
         required=False,
         read_only=False,
-        queryset=User.objects.filter().values_list('contacts', flat=True)
+        queryset=User.objects.filter()
     )
 
     class Meta:
