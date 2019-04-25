@@ -31,6 +31,9 @@ class Reservation(models.Model):
     status = models.CharField(
         choices=STATUS_LIST, default="Pending", max_length=30)
 
+    class Meta:
+        unique_together = ('guest', 'created_by', 'date')
+
     def save(self, *args, **kwargs):
         if self.guest is None:
             self.status = self.ACCEPTED

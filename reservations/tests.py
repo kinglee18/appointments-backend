@@ -1,10 +1,32 @@
 from django.test import TestCase
-from rest_framework import  status
+from rest_framework import status
 from rest_framework.test import APIClient
 from users.models import User
+
 
 class ScheduleCrudTestCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="alberto@hotmail.com")
         self.client = APIClient()
+
+    """
+    Test a reservation
+    """
+
+    def test_make_reservation(self):
+        guest = User.objects.create(email="jose@hotmail.com", is_active=True)
+        data = {
+            "date": "2019-03-03 11:11:00",
+            "guest_id": guest.id
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            "/reservation/",
+            data,
+            format="json")
+        response = self.client.post(
+            "/reservation/",
+            data,
+            format="json")
+        assert response.status_code == status.HTTP_201_CREATED
