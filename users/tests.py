@@ -29,6 +29,7 @@ class UserCrudTestCase(TestCase):
             "password": "hola"
         }
         response = self.client.post("/users/", data, format="json")
+        assert response.status_code == status.HTTP_201_CREATED
         for field in result_fields:
             assert field in response.data
 
