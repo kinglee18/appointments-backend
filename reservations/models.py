@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import EmailValidator
 
 
 class Reservation(models.Model):
@@ -23,16 +23,15 @@ class Reservation(models.Model):
     guest = models.ForeignKey(
         'users.User', on_delete=models.CASCADE, null=True, related_name='Guest')
     guest_contact = models.CharField(max_length=100, null=True,  validators=[
-        RegexValidator(
-            regex='^77$',
-            message='Ingresa un número teléfonico o un correo electrónico',
+        EmailValidator(
+            message='Ingresa un correo electrónico',
         ),
     ])
     status = models.CharField(
         choices=STATUS_LIST, default="Pending", max_length=30)
 
     class Meta:
-        unique_together = ('guest', 'created_by', 'date')
+        unique_together = ['date', 'created_by', 'guest']
 
     def save(self, *args, **kwargs):
         if self.guest is None:
