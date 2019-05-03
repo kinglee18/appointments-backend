@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
 from users.models import User
 from users.serializers import UserSerializer
 
@@ -8,7 +9,8 @@ from users.serializers import UserSerializer
 class UserCrudTestCase(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create(email="alberto@hotmail.com")
+        self.user = User.objects.create(
+            is_active=True, email="king@hotmail.com")
         self.client = APIClient()
 
     def test_required_register_fields(self):
@@ -30,6 +32,7 @@ class UserCrudTestCase(TestCase):
         }
         response = self.client.post("/users/", data, format="json")
         assert response.status_code == status.HTTP_201_CREATED
+        assert Token.objects.get(user__email="javier@gmail.com")
         for field in result_fields:
             assert field in response.data
 
@@ -55,7 +58,8 @@ class UserCrudTestCase(TestCase):
 class ContactsCrudTestCase(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create(email="alberto@hotmail.com")
+        self.user = User.objects.create(
+            email="alberto@hotmail.com", is_active=True)
         self.client = APIClient()
     """
     Test contact addition
@@ -75,7 +79,8 @@ class ContactsCrudTestCase(TestCase):
         assert response.status_code == status.HTTP_200_OK
 
     def test_contact_removal(self):
-        contact = User.objects.create(email="jose@hotmail.com", is_active=True)
+        contact = User.objects.create(
+            email="jose2@hotmail.com", is_active=True)
         self.user.contacts.add(contact)
         data = {
             "contacts": []
@@ -87,3 +92,12 @@ class ContactsCrudTestCase(TestCase):
             format="json")
         assert self.user.contacts.count() == 0
         assert response.status_code == status.HTTP_200_OK
+
+    def test_account_activation(self):
+        user = User.objects.create(email="jose3@hotmail.com")
+        response = self.client.post(
+            "/account", {"token": user.auth_token.key}, format="json"
+        )
+        user = User.objects.get(email="jose3@hotmail.com")
+        assert response.status_code == status.HTTP_200_OK
+        assert user.is_active is True
