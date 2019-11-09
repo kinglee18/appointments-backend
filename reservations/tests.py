@@ -15,7 +15,7 @@ class ScheduleCrudTestCase(TestCase):
     """
 
     def test_make_reservation(self):
-        guest = User.objects.create(is_active=True,email="jose@hotmail.com", is_active=True)
+        guest = User.objects.create(email="jose@hotmail.com", is_active=True)
         data = {
             "date": "2019-03-03 11:11:00",
             "guest": guest.id
