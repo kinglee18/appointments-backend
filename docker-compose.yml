@@ -1,0 +1,43 @@
+version: "3"
+services:
+  db:
+    image: "postgres"
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+    container_name: "my_postgres"
+    environment:
+      - POSTGRES_USER=king
+      - POSTGRES_PASSWORD=1
+      - POSTGRES_DB=appointments
+    ports:
+      - "5432"
+
+    expose:
+      - "5432"
+  web:
+    build: .
+    command: bash -c "python3 manage.py collectstatic --no-input && gunicorn --workers=3 appointments.wsgi -b 0.0.0.0:8080"
+    volumes:
+      - .:/code
+      - static:/code/static
+      - media:/code/media
+    depends_on:
+      - db
+
+  nginx:
+      image: "nginx"
+      volumes: 
+        - ./nginx/:/etc/nginx/conf.d
+        - ./logs/:/code/logs
+        - static:/code/static
+        - media:/code/media
+      ports: 
+        - "1221:80"
+      links:
+        - web  
+      depends_on: 
+        - web
+volumes:
+  postgres_data:
+  static:
+  media:
