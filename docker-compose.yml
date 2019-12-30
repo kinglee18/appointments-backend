@@ -32,7 +32,7 @@ services:
         - static:/code/static
         - media:/code/media
       ports: 
-        - "1221:80"
+        - "80:80"
       links:
         - web  
       depends_on: 
